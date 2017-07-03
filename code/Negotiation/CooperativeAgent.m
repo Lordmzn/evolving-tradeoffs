@@ -80,8 +80,8 @@ classdef CooperativeAgent
             for i = 1:size(thetaToTry, 1)
                 policy.theta = thetaToTry(i, :);
                 sub_inflows = inflows(1:min([10000 length(inflows)]));
-                objectivesToTry(i) = Test_simulateSystem(s0, sub_inflows, policy,...
-                    agent);
+                objectivesToTry(i) = Test_simulateSystem(s0, sub_inflows, ...
+                    policy, agent);
                 if mod(i, min(round(size(thetaToTry, 1)/10), 5000)) == 0
                     disp(['CooperativeAgent.getStarted: name = ' obj.name ...
                         '; thetaToTry n' num2str(i) ' = ' num2str(toc(thetaTic)) ' [s]'])
@@ -136,7 +136,7 @@ classdef CooperativeAgent
                 obj.concessionCoefficient = obj.concessionCoefficientLimits(1);
             end
             if isfield(obj.settings, 'movingUtility') && ...
-                    ~obj.settings.movingUtility
+                    obj.settings.movingUtility
                 obj.areObjectivesUpdated = false;
             end
             
