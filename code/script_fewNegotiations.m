@@ -3,18 +3,14 @@
 %% GLOBAL SETTINGS
 set(0, 'DefaultFigureWindowStyle', 'docked') % remove when exporting
 
-experimentId = 'SOP_inflowMitFeatures2_fxUtil_few';
+experimentId = '';
 
 param.system = 'Test';
 param = feval([param.system '_parameters'], param);
 
-% overwriting because i'm running other exp atm
-param.policy.evaluate = @Test_SOP;
-param.thetaLimits = [0 200; 0 200];
-
 % choose a specific scenario combination
-load SOP_inflowMitFeatures2_physicalScenario.mat
-load SOP_inflowMitFeatures2_decisionScenario.mat
+load physicalScenario.mat
+load decisionScenario.mat
 clear paramUsed
 
 inflowScenario = inflows; clear inflows
@@ -46,9 +42,6 @@ for name = 1:nAgents
 end
 disp(['flooding' 9 ' alpha = ' num2str(agents.flooding.concessionCoefficient)]);
 disp(['irrigation' 9 ' alpha = ' num2str(agents.irrigation.concessionCoefficient)]);
-if nAgents > 2
-    disp(['reliability' 9 ' alpha = ' num2str(agents.reliability.concessionCoefficient)]);
-end
 clear agent
 
 mediator = Mediator(param.system);
@@ -63,23 +56,11 @@ values = [linspace(param.agents.flooding.concessionCoefficientLimits(1), ...
     param.agents.flooding.concessionCoefficientLimits(2), granularity); ...
     linspace(param.agents.irrigation.concessionCoefficientLimits(1), ...
     param.agents.irrigation.concessionCoefficientLimits(2), granularity)];
-if nAgents > 2
-    values = [values; ...
-        linspace(param.agents.reliability.concessionCoefficientLimits(1), ...
-        param.agents.reliability.concessionCoefficientLimits(2), granularity)];
-end
 
 concessionCoefficientsValues = [];
 for x = 1 : granularity
     for y = 1 : granularity
-        if nAgents > 2
-            for z = 1 : granularity
-                concessionCoefficientsValues(end+1, :) = [values(1,x) ...
-                    values(2,y) values(3,z)];
-            end
-        else
-            concessionCoefficientsValues(end+1, :) = [values(1,x) values(2,y)];
-        end
+        concessionCoefficientsValues(end+1, :) = [values(1,x) values(2,y)];
     end
 end
 nAlpha = length(concessionCoefficientsValues);
@@ -225,8 +206,7 @@ end
 
 %% saving
 
-save(['A2 - set-based cooperative negotiation protocol/' ...
-    param.system '/Data/' experimentId '_thetaRes' ...
+save(['data/negotiation_' experimentId '_few_thetaRes' ...
     num2str(agents.flooding.thetaResolution) '_gran' ...
-    num2str(granularity) '_negotiation.mat']);
+    num2str(granularity) '.mat']);
 
